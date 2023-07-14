@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap"
+          rel="stylesheet">
+
+    <title>logIn</title>
+
+    <style>
+
+        .form-floating {
+            margin: 15px;
+            width: 500px;
+        }
+
+    </style>
+    <script>
+        function signUp() {
+            window.location.href = "/sign-up-page"
+        }
+
+        function logIn() {
+            let id = $('#idInput').val()
+            let password = $('#passwordInput').val()
+            let a = ''
+            if (a === id) {
+                alert("id를 입력하세요")
+                return;
+            }
+            if (a === password) {
+                alert("비밀번호를 입력하세요")
+                return;
+            }
+            $.ajax({
+                type: "post",
+                url: "/users/logIn",
+                data: JSON.stringify({userId: id, password: password}),
+                accept: "application/json",
+                contentType: "application/json; charset=utf-8",
+                data_type: "json",
+                success: function (data, xmlHttpRequest, request) {
+                    document.cookie =
+                        'Authorization' + '=' + request.getResponseHeader('authorization') + ';path=/';
+                    alert(data['data'])
+                    window.location.href = '/'
+                },
+                error: function (response) {
+                    alert(response['responseJSON']['message'])
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div class="form-floating mb-3">
+    <input type="email" class="form-control" id="idInput" placeholder="name@example.com">
+    <label for="idInput">ID</label>
+</div>
+
+<div class="form-floating">
+    <input type="password" class="form-control" id="passwordInput" placeholder="Password">
+    <label for="passwordInput">Password</label>
+</div>
+<div class="btn">
+    <button type="button" class="btn btn-outline-dark" onclick="logIn()">로그인</button>
+    <button type="button" class="btn btn-outline-primary" onclick="signUp()">회원가입</button>
+</div>
+
+
+</body>
+</html>
