@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, shrink-to-fit=no">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap"
+          rel="stylesheet">
+
+    <title>memberUpdate</title>
+
+    <style>
+        .form-floating {
+            margin: 15px;
+            width: 500px;
+        }
+
+        .btn-outline-dark {
+            margin-top: 10px;
+            margin-left: 16px;
+        }
+    </style>
+
+    <script>
+
+        function updateMember() {
+            const auth = getToken()
+            let userId = getUserId()
+            let updateUserId = $('#idInput').val()
+            let updatePassword = $('#passwordInput').val()
+            let updateEmail = $('#emailInput').val()
+            let checkPassword = $('#checkPasswordInput').val()
+            $.ajax({
+                type: "POST",
+                url: "/users/update",
+                data: JSON.stringify({
+                    userId: userId,
+                    updateUserId: updateUserId,
+                    updatePassword: updatePassword,
+                    updateEmail: updateEmail,
+                    checkPassword: checkPassword
+                }),
+                accept: "application/json",
+                contentType: "application/json; charset=utf-8",
+                data_type: "jason",
+                beforeSend: function (xmlHttpRequest) {
+                    xmlHttpRequest.setRequestHeader("Authorization", auth)
+                },
+                success: function (response, xmlHttpRequest, request) {
+                    document.cookie =
+                        'Authorization' + '=' + request.getResponseHeader('authorization') + ';path=/';
+                    alert(response['data'])
+                    window.location.href = '/'
+                },
+                error: function (response) {
+                    alert(response['responseJSON']['message'])
+                }
+            })
+        }
+
+        function deleteMember() {
+            const auth = getToken()
+            let userId = getUserId()
+            let checkPassword = $('#checkPasswordInput').val()
+            $.ajax({
+                type: "DELETE",
+                url: "/users/delete",
+                data: JSON.stringify({userId: userId, checkPassword: checkPassword}),
+                accept: "application/json",
+                contentType: "application/json; charset=utf-8",
+                data_type: "jason",
+                beforeSend: function (xmlHttpRequest) {
+                    xmlHttpRequest.setRequestHeader("Authorization", auth)
+                },
+                success: function (response) {
+                    alert(response['data'])
+                    if (response['data'].length < 6) {
+                        logout()
+                    }
+                    window.location.href = '/'
+                },
+                error: function (response) {
+                    alert(response['responseJSON']['message'])
+                }
+            })
+        }
+
+        function getUserId() {
+            return window.location.href.substr(41)
+        }
+
+        function getToken() {
+            let cookieName = 'Authorization' + '=';
+            let cookieData = document.cookie;
+            let cookie = cookieData.indexOf('Authorization');
+            let auth = '';
+            if (cookie !== -1) {
+                cookie += cookieName.length;
+                let end = cookieData.indexOf(';', cookie);
+                if (end === -1) end = cookieData.length;
+                auth = cookieData.substring(cookie, end);
+            }
+            return auth;
+        }
+
+        function logout() {
+            document.cookie =
+                'Authorization' + '=' + '' + ';path=/';
+            window.location.reload();
+        }
+
+    </script>
+
+</head>
+<body>
+<h2>
+    CheckPassword를 제외한 나머지 입력 칸이 빈칸일 시 기존 정보로 대체 됩니다.
+</h2>
+<div class="form-floating mb-3">
+    <input type="email" class="form-control" id="idInput" placeholder="name@example.com">
+    <label for="idInput">ID</label>
+</div>
+
+<div class="form-floating">
+    <input type="password" class="form-control" id="passwordInput" placeholder="Password">
+    <label for="passwordInput">UpdatePassword</label>
+</div>
+
+<div class="form-floating mb-3">
+    <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
+    <label for="emailInput">Email address</label>
+</div>
+
+<div class="form-floating">
+    <input type="password" class="form-control" id="checkPasswordInput" placeholder="Password">
+    <label for="passwordInput">CheckPassword 필수로 작성해 주세요</label>
+</div>
+
+<div>
+    <button type="button" class="btn btn-outline-dark" onclick="updateMember()">수정</button>
+</div>
+
+<div>
+    <button type="button" class="btn btn-outline-dark" onclick="deleteMember()">회원 탈퇴</button>
+</div>
+
+</body>
+</html>

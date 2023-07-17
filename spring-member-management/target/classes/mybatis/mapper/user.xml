@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.realiv.mapper.UserMapper">
+
+    <select id="findByUserId" parameterType="String" resultType="kr.co.realiv.data.dto.DbResponseDto">
+        SELECT USER_ID AS userId, PASSWORD AS password, USER_NAME AS userName, EMAIL AS email, ROLE AS role
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <insert id="signUp" parameterType="kr.co.realiv.data.User" useGeneratedKeys="true" keyProperty="ID">
+        INSERT INTO USERS
+        (
+            USER_ID,
+            PASSWORD,
+            USER_NAME,
+            EMAIL,
+            ROLE
+        )
+        VALUES
+        (
+            #{params.userId},
+            #{params.password},
+            #{params.userName},
+            #{params.email},
+            #{params.role}
+        )
+    </insert>
+
+    <select id="getMemberList" resultType="kr.co.realiv.data.dto.DbResponseDto">
+        SELECT USER_ID AS userId
+        FROM USERS
+    </select>
+
+    <select id="getAllMemberDetails" resultType="kr.co.realiv.data.dto.DbResponseDto">
+        SELECT USER_ID AS userId, USER_NAME AS userName, EMAIL AS email, ROLE AS role
+        FROM USERS
+    </select>
+
+    <select id="getMemberDetails" resultType="kr.co.realiv.data.dto.DbResponseDto">
+        SELECT USER_ID AS userId, USER_NAME AS userName, EMAIL AS email, ROLE AS role
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <update id="updateUserId" parameterType="kr.co.realiv.data.dto.UserUpdateAndDeleteDto">
+        UPDATE USERS
+        SET USER_ID = #{params.updateUserId},
+            PASSWORD = #{params.updatePassword},
+            EMAIL = #{params.updateEmail}
+        WHERE USER_ID = #{params.userId}
+    </update>
+
+    <delete id="deleteUser" parameterType="kr.co.realiv.data.dto.UserUpdateAndDeleteDto">
+        DELETE
+        FROM USERS
+        WHERE USER_ID = #{params.userId}
+    </delete>
+</mapper>
